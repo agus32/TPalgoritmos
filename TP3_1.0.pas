@@ -94,6 +94,7 @@ else
     end;
 end;
 
+
 procedure asigna_y_abre;
 begin
 assign(emp,'C:\TP3\EMPRESAS-CONSTRUCTORAS.DAT');
@@ -114,6 +115,96 @@ reset(produ);
 if (ioresult = 2) then rewrite(produ);
 {$I+}
 end;
+
+FUNCTION BUSQUEDA_DICOT(valor:string[3]):boolean
+VAR 
+    sup,inf,med : integer;
+    band : boolean;
+
+begin
+    reset(ciu);
+    sup:= filesize(ciu)-1;
+    inf := 0;
+    band := false;
+    while (band = false) and (inf<=sup)
+        begin
+            med:= (inf + sup) div 2;
+            seek(ciu,med);
+            read (ciu,ci);
+            if ci.cod_ciu = valor then
+                band := true
+            else 
+                if ci.cod_ciu > valor then
+                    sup:= med - 1
+                else
+                    inf:= med + 1;
+
+        end;
+    BUSQUEDA_DICOT := band;
+end;
+
+FUNCTION BUSQUEDA_SEC(valor:string[3]):boolean
+var
+    band : boolean;
+
+begin
+    band := false;
+    reset(emp);
+    while not(EOF(emp)) do
+    begin
+        read(emp,e);
+        if e.cod_emp = valor then
+        band := true;
+    end;
+BUSQUEDA_SEC := band;
+end;
+
+
+
+PROCEDURE alta_empresas;
+VAR 
+    k: char;
+    nombre_emp, direccion, mail, telefono: string[20];
+    cod_emp,COD_ciudad: string[3];
+
+BEGIN
+    repeat
+        writeln('Ingrese el codigo de la empresa');
+        repeat
+            readln(cod_emp);
+        until BUSQUEDA_SEC(cod_emp);
+        writeln('Ingrese el nombre de la empresa');
+        readln(nombre_emp);
+        writeln('Ingrese la direccion');
+        readln(direccion);
+        writeln('Ingrese el mail de la empresa');
+        readln(mail);
+        writeln('Ingrese el telefono');
+        readln(telefono);
+        repeat
+            writeln('Ingrese el codigo de la ciudad (codigo valido)');
+            readln(COD_ciudad);
+        until not(BUSQUEDA_DICOT(COD_ciudad));
+        writeln('---------------------------');
+        cant_emp := cant_emp + 1;
+        e.cod_emp := cod_emp;
+        e.nom := nombre_emp;
+        e.dire := direccion;
+        e.mail := mail;
+        e.tel := telefono;
+        e.cod_ciu := COD_ciudad;
+        e.cont := 0; 
+        if not(eof(emp)) then
+            seek(emp,filesize(emp));
+        write(emp,e);
+        repeat
+            writeln('Desea agregar otra empresa? Presione S para continuar, N para terminar');
+            readln(k)
+        until (k='S')or(k='N');
+    until (k='N');
+    writeln('---------------------------');
+
+END;
 
 procedure opciones_menup;
 begin
