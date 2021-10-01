@@ -1,8 +1,8 @@
 Program TP3;
 Uses crt;
 Const
-clave_empresas = 'empresas123';
-clave_clientes = 'clientes123';
+clave_empresas = 'a';
+clave_clientes = 'b';
 Type
 unaEmpresa = record
            cod_emp: string[3];
@@ -205,6 +205,85 @@ BEGIN
 
 END;
 
+function encontro_proyecto(dato: string[3]): boolean;
+var reg: unProyecto;
+begin
+if (filesize(proyec) = 0) then encontro_proyecto:= false
+else
+    begin
+    seek(proyec,0);
+    repeat
+          read(proyec,reg);
+    until (reg.cod_proy = dato) or eof(proyec);
+    if (reg.cod_proy = dato) then encontro_proyecto:= true
+    else encontro_proyecto:= false;
+    end;
+end;
+
+procedure alta_proyectos;
+var opc: char;
+begin
+clrscr;
+writeln('Alta de PROYECTOS');
+writeln();
+writeln();
+repeat
+      writeln('-------------------------------------------------------------------------------------');
+      writeln();
+      write('Ingrese el codigo del proyecto: ');
+      repeat
+      readln(proy.cod_proy);
+      if encontro_proyecto(proy.cod_proy) then write('El codigo ingresado ya existe, intentelo de nuevo: ');
+      until not encontro_proyecto(proy.cod_proy);
+      writeln();
+      write('Ingrese el codigo de la empresa: ');
+      //repeat
+      readln(proy.cod_emp);
+      //until busqueda_sec(proy.cod_emp);
+      writeln();
+      write('Ingrese la etapa del proyecto (P - O - T: Preventa - Obra - Terminado): ');
+      repeat
+      readln(proy.etapa);
+      proy.etapa:= upcase(proy.etapa);
+      if (proy.etapa <> 'P') and (proy.etapa <> 'O') and (proy.etapa <> 'T') then write('La etapa ingresada no es valida, intentelo de nuevo: ');
+      until (proy.etapa = 'P') or (proy.etapa = 'O') or (proy.etapa = 'T');
+      writeln();
+      writeln('Ingrese el tipo de proyecto');
+      write('Casa - Edificio departamento - Edificio oficina - Loteos (C - D - O - L): ');
+      repeat
+      readln(proy.tipo);
+      proy.tipo:= upcase(proy.tipo);
+      if (proy.tipo <> 'C') and (proy.tipo <> 'D') and (proy.tipo <> 'O') and (proy.tipo <> 'L') then write('El tipo ingresado no es valido, intentelo de nuevo: ');
+      until (proy.tipo = 'C') or (proy.tipo = 'D') or (proy.tipo = 'O') or (proy.tipo = 'L');
+      writeln();
+      write('Ingrese el codigo de ciudad: ');
+      //repeat
+      readln(proy.cod_ciu);
+      //until funcion();
+      writeln();
+      write('Ingrese la cantidad de productos: ');
+      readln(proy.cant[1]);
+      writeln();
+      write('Ingrese la cantidad de consultas: ');
+      readln(proy.cant[2]);
+      writeln();
+      write('Ingrese la cantidad de vendidos: ');
+      readln(proy.cant[3]);
+      writeln();
+      writeln();
+      proy.cont:= 0;
+      seek(proyec,filesize(proyec));
+      write(proyec,proy);
+      write('Desea seguir cargando empresas [S/N]: ');
+      repeat
+      readln(opc);
+      opc:= upcase(opc);
+      until (opc = 'S') or (opc = 'N');
+      writeln();
+      writeln();
+until (opc = 'N');
+end;
+
 procedure opciones_menup;
 begin
 writeln('MENU PRINCIPAL');
@@ -245,13 +324,13 @@ Repeat
           write ('Ingrese una opcion: ');
           readln(opc);
           until (opc >= 0) and (opc <= 5);
-     {case opc of
-          1: alta_ciudades;
+     case opc of
+          //1: alta_ciudades;
           2: alta_empresas;
           3: alta_proyectos;
-          4: alta_productos;
-          5: estadisticas;
-          end;}
+          {4: alta_productos;
+          5: estadisticas;}
+          end;
 until (opc=0);
 end;
 
