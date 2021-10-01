@@ -116,7 +116,7 @@ if (ioresult = 2) then rewrite(produ);
 {$I+}
 end;
 
-FUNCTION BUSQUEDA_DICOT(valor:string[3]):boolean
+FUNCTION BUSQUEDA_DICOT(valor:string):boolean;
 VAR 
     sup,inf,med : integer;
     band : boolean;
@@ -126,7 +126,7 @@ begin
     sup:= filesize(ciu)-1;
     inf := 0;
     band := false;
-    while (band = false) and (inf<=sup)
+    while (band = false) and (inf<=sup) do
         begin
             med:= (inf + sup) div 2;
             seek(ciu,med);
@@ -143,7 +143,7 @@ begin
     BUSQUEDA_DICOT := band;
 end;
 
-FUNCTION BUSQUEDA_SEC(valor:string[3]):boolean
+FUNCTION BUSQUEDA_SEC(valor:string):boolean;
 var
     band : boolean;
 
@@ -186,7 +186,6 @@ BEGIN
             readln(COD_ciudad);
         until not(BUSQUEDA_DICOT(COD_ciudad));
         writeln('---------------------------');
-        cant_emp := cant_emp + 1;
         e.cod_emp := cod_emp;
         e.nom := nombre_emp;
         e.dire := direccion;
