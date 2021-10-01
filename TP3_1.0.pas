@@ -284,6 +284,32 @@ repeat
 until (opc = 'N');
 end;
 
+procedure codciudad;
+var
+cod_ciudad: string[3];
+nom_ciu:string[25];
+respuesta:string[2];
+begin
+reset (ciu);
+     writeln('Alta de ciudades');
+     repeat
+              repeat
+
+                    writeln('Ingrese codigo de la ciudad');
+                    writeln ('CBA. CORDOBA');
+                    writeln ('ROS. ROSARIO');
+                    writeln('BSA. BUENOS AIRES');
+                    readln (cod_ciudad)
+              until (cod_ciudad='ROS') OR (cod_ciudad='CBA') OR (cod_ciudad='BSA') ;
+         writeln('Ingrese el nombre de la ciudad');
+         readln(nom_ciu);
+         writeln('¿Desea ingresar otra ciudad?');
+         readln(respuesta)
+         until(respuesta='NO');
+close(ciu);
+readln();
+end.
+
 procedure opciones_menup;
 begin
 writeln('MENU PRINCIPAL');
