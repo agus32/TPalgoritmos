@@ -26,7 +26,7 @@ unCliente = record
           mail: string[15];
           end;
 
-arreglo = array[1..3] of integer;
+arreglo = array[1..4] of integer;
 
 unProyecto = record
            cod_proy: string[3];
@@ -272,9 +272,83 @@ repeat
       writeln();
       writeln();
       proy.cont:= 0;
+      proy.cant[4]:=0;
       seek(proyec,filesize(proyec));
       write(proyec,proy);
       write('Desea seguir cargando empresas [S/N]: ');
+      repeat
+      readln(opc);
+      opc:= upcase(opc);
+      until (opc = 'S') or (opc = 'N');
+      writeln();
+      writeln();
+until (opc = 'N');
+end;
+
+function cant_prod_proy(dato:string[3]): boolean;  //dato es el cod_proye
+var band: bool;
+    reg: unProyecto;
+begin
+band:=false;
+if (filesize(proyec)= 0) then cant_prod_proy:= false
+else
+    begin
+    seek(proyec,0);
+    repeat
+          read(proyec,reg);
+    until (reg.cod_proy = dato) or eof(proyec);
+    if (reg.cod_proy = dato) then band:= true;
+    if (band = true) then
+       if (reg.cant[4]<reg.cant[1]) then
+       reg.cant[4]:=reg.cant[4]+1;
+       cant_prod_proy:=true;
+       write(proyec,reg)
+       else cant_prod_proy:= false;
+    end;
+end;
+
+procedure alta_productos;
+var
+opc: char;
+estad: string[2];
+
+begin
+clrscr;
+writeln('-Alta de PRODUCTOS-');
+writeln();
+repeat
+      writeln('----------------------------------------');
+      {$I-}
+      repeat
+            writeln('Ingrese el codigo del producto: ');
+            readln(prod.cod_prod);
+      until (ioresult=0);
+      {$I+}
+      repeat
+            writeln('Ingrese el codigo de proyecto correspondiente: ');
+            readln(prod.cod_proy);
+            if not (encontro_proyecto(prod.cod_proy)) then write('El codigo de proy. no existe, ingrese uno existente: ');
+            //tengo que hacer un contador de prod por proyecto asi no se pasa de eso.
+      until (encontro_proyecto(prod.cod_proy) and cant_prod_proy(prod.cod_proy));
+      {$I-}
+      repeat
+            writeln('Ingrese el precio de venta');
+            readln(prod.prec);
+      until (ioresult=0) and (prod.prec>=0);
+      {$I+}
+      repeat
+            writeln('Ingrese el estado del producto - Vendido: SI/NO: ');
+            readln(estad);
+      until (estad='SI') or (prod.estado='NO');
+      if (estado='SI') then prod.estado=true;
+      if (estado='NO') then prod.estaedo=false;
+      writeln('Ingrese los detalles del producto: ');
+      wrilten(prod.detall);
+
+      seek(produ,filesize(produ));
+      write(produ,prod);
+
+      write('Desea seguir cargando productos [S/N]: ');
       repeat
       readln(opc);
       opc:= upcase(opc);
@@ -308,7 +382,7 @@ reset (ciu);
          until(respuesta='NO');
 close(ciu);
 readln();
-end.
+end;
 
 procedure opciones_menup;
 begin
