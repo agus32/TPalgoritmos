@@ -146,7 +146,7 @@ end;
 FUNCTION BUSQUEDA_SEC(valor:string):boolean;
 var
     band : boolean;
-
+    
 begin
     band := false;
     reset(emp);
@@ -172,7 +172,7 @@ BEGIN
         writeln('Ingrese el codigo de la empresa');
         repeat
             readln(cod_emp);
-        until BUSQUEDA_SEC(cod_emp);
+        until not(BUSQUEDA_SEC(cod_emp));
         writeln('Ingrese el nombre de la empresa');
         readln(nombre_emp);
         writeln('Ingrese la direccion');
@@ -184,7 +184,7 @@ BEGIN
         repeat
             writeln('Ingrese el codigo de la ciudad (codigo valido)');
             readln(COD_ciudad);
-        until not(BUSQUEDA_DICOT(COD_ciudad));
+        until BUSQUEDA_DICOT(COD_ciudad);
         writeln('---------------------------');
         e.cod_emp := cod_emp;
         e.nom := nombre_emp;
@@ -360,7 +360,7 @@ repeat
 until (opc = 'N');
 end;
 
-procedure codciudad;
+procedure alta_ciudades;
 var
 cod_ciudad: string[3];
 nom_ciu:string[25];
