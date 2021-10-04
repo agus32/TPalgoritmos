@@ -302,10 +302,15 @@ else
        if (reg.cant[4]<reg.cant[1]) then
        begin
        reg.cant[4]:=reg.cant[4]+1;
-       cant_prod_proy:=true;
-       write(proyec,reg)
+       seek(proyec,(filepos(proyec)-1));
+       write(proyec,reg);
+       cant_prod_proy:=true
        end
-       else cant_prod_proy:=false
+       else
+       begin
+       writeln('La cant. de productos ya llego al limite.');
+       cant_prod_proy:=false
+       end
     end
 end;
 
@@ -327,11 +332,11 @@ repeat
       until (ioresult=0);
       {$I+}
       repeat
-            writeln('Ingrese el codigo de proyecto correspondiente: ');
+            writeln('Ingrese codigo de proyecto correspondiente: ');
             readln(prod.cod_proy);
             if not (encontro_proyecto(prod.cod_proy)) then write('El codigo de proy. no existe, ingrese uno existente: ');
             //tengo que hacer un contador de prod por proyecto asi no se pasa de eso.
-      until (encontro_proyecto(prod.cod_proy) and cant_prod_proy(prod.cod_proy));
+      until cant_prod_proy(prod.cod_proy);
       {$I-}
       repeat
             writeln('Ingrese el precio de venta');
@@ -360,13 +365,11 @@ repeat
 until (opc = 'N');
 end;
 
-procedimiento codciudad;
-uses crt;
+procedure alta_ciudades;
 var
-cod_ciu: string[3];
-nom:string[25];
+cod_ciudad: string[3];
+nom_ciu:string[25];
 respuesta:string[2];
-
 begin
      writeln('Alta de ciudades');
      repeat
@@ -385,8 +388,6 @@ begin
          writeln('¿Desea ingresar otra ciudad?');
          readln(respuesta)
          until(respuesta='NO');
-
-readln();
 
 end;
 
@@ -431,11 +432,11 @@ Repeat
           readln(opc);
           until (opc >= 0) and (opc <= 5);
      case opc of
-          //1: alta_ciudades;
+          1: alta_ciudades;
           2: alta_empresas;
           3: alta_proyectos;
-          {4: alta_productos;
-          5: estadisticas;}
+          4: alta_productos;
+          {5: estadisticas;}
           end;
 until (opc=0);
 end;
