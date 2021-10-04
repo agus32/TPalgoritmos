@@ -286,7 +286,7 @@ until (opc = 'N');
 end;
 
 function cant_prod_proy(dato:string[3]): boolean;  //dato es el cod_proye
-var band: bool;
+var band: boolean;
     reg: unProyecto;
 begin
 band:=false;
@@ -300,11 +300,13 @@ else
     if (reg.cod_proy = dato) then band:= true;
     if (band = true) then
        if (reg.cant[4]<reg.cant[1]) then
+       begin
        reg.cant[4]:=reg.cant[4]+1;
        cant_prod_proy:=true;
        write(proyec,reg)
-       else cant_prod_proy:= false;
-    end;
+       end
+       else cant_prod_proy:=false
+    end
 end;
 
 procedure alta_productos;
@@ -339,11 +341,11 @@ repeat
       repeat
             writeln('Ingrese el estado del producto - Vendido: SI/NO: ');
             readln(estad);
-      until (estad='SI') or (prod.estado='NO');
-      if (estado='SI') then prod.estado=true;
-      if (estado='NO') then prod.estaedo=false;
+      until (estad='SI') or (estad='NO');
+      if (estad='SI') then prod.estado:=true;
+      if (estad='NO') then prod.estado:=false;
       writeln('Ingrese los detalles del producto: ');
-      wrilten(prod.detall);
+      readln(prod.detall);
 
       seek(produ,filesize(produ));
       write(produ,prod);
