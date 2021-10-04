@@ -360,30 +360,34 @@ repeat
 until (opc = 'N');
 end;
 
-procedure alta_ciudades;
+procedimiento codciudad;
+uses crt;
 var
-cod_ciudad: string[3];
-nom_ciu:string[25];
+cod_ciu: string[3];
+nom:string[25];
 respuesta:string[2];
+
 begin
-reset (ciu);
      writeln('Alta de ciudades');
      repeat
-              repeat
+           {$I-}
 
+              repeat
+                      
                     writeln('Ingrese codigo de la ciudad');
-                    writeln ('CBA. CORDOBA');
-                    writeln ('ROS. ROSARIO');
-                    writeln('BSA. BUENOS AIRES');
-                    readln (cod_ciudad)
-              until (cod_ciudad='ROS') OR (cod_ciudad='CBA') OR (cod_ciudad='BSA') ;
+                    readln (ci.cod_ciu);
+              until ioresult<>0;
+            {$I+}           
          writeln('Ingrese el nombre de la ciudad');
-         readln(nom_ciu);
+         readln(ci.nom);
+         seek(ciu,filesize(ciu));
+         write(ciu,ci)
          writeln('¿Desea ingresar otra ciudad?');
          readln(respuesta)
          until(respuesta='NO');
-close(ciu);
+
 readln();
+
 end;
 
 procedure opciones_menup;
