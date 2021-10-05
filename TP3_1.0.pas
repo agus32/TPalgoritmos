@@ -390,6 +390,27 @@ begin
          until(respuesta='NO');
 
 end;
+procedure odernaci;
+begin
+reset (ci);
+for i:= 0 to filesize(ci)-2 do
+       for j := i+1 to filesize(ci)-1 do
+          begin
+          Seek (ci ,i  );
+          READ (ci , ci.cod_ciu);
+          Seek (ci , j );
+          READ (ci , ci.cod_ciu);
+          if ci.cod_ciu > ci.cod_ciu
+              then
+                  begin
+                     Seek (ci ,i  );
+                     Write (ci, ci.cod_ciu);
+                     Seek (ci , j );
+                     write (ci, ci.cod_ciu);
+                   end;
+         end;
+readln();
+end;
 
 procedure opciones_menup;
 begin
