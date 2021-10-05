@@ -275,7 +275,7 @@ repeat
       proy.cant[4]:=0;
       seek(proyec,filesize(proyec));
       write(proyec,proy);
-      write('Desea seguir cargando empresas [S/N]: ');
+      write('Desea seguir cargando proyectos [S/N]: ');
       repeat
       readln(opc);
       opc:= upcase(opc);
