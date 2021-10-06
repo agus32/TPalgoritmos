@@ -385,10 +385,10 @@ begin
          readln(ci.nom);
          seek(ciu,filesize(ciu));
          write(ciu,ci)
+         ordenaci;
          writeln('¿Desea ingresar otra ciudad?');
          readln(respuesta)
          until(respuesta='NO');
-ordenaci;
 end;
 procedure odernaci;
 var
