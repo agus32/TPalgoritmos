@@ -408,7 +408,7 @@ clrscr;
          seek(ciu,filesize(ciu));
          write(ciu,ci);
          ordenaci;
-         writeln('øDesea ingresar otra ciudad?');
+         writeln('¬øDesea ingresar otra ciudad?');
          readln(respuesta);
          until(respuesta='NO');
 end;
@@ -458,7 +458,7 @@ for g:= 0 to (filesize(proyec) - 1) do
     if proy.cant[2] > 10 then
        writeln('Empresa con codigo: ',proy.cod_emp);
     end;
-writeln('La ciudad con m·s consultas de proyectos: ');
+writeln('La ciudad con m√°s consultas de proyectos: ');
 mayor:= 0;
 for g:= 0 to (filesize(proyec) - 1) do
     begin
@@ -468,6 +468,14 @@ for g:= 0 to (filesize(proyec) - 1) do
        ciud_mayor:= proy.cod_ciu;
     end;
 writeln(ciud_mayor);
+writeln('Los proyectos que vendieron todas las unidades');
+for g:= 0 to (filesize(proyec) - 1) do
+    begin
+    read(proyec,proy);
+    if proy.cant[3] = proy.cant[1] then
+       writeln(proy.cod_proy);
+    end;
+readln();
 end;
 
 procedure menuempresas;
