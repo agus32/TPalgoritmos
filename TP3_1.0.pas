@@ -120,7 +120,7 @@ FUNCTION BUSQUEDA_DICOT(valor:string):boolean;
 VAR 
     sup,inf,med : integer;
     band : boolean;
-
+    m: unaCiudad;
 begin
     reset(ciu);
     sup:= filesize(ciu)-1;
@@ -130,15 +130,14 @@ begin
         begin
             med:= (inf + sup) div 2;
             seek(ciu,med);
-            read (ciu,ci);
-            if ci.cod_ciu = valor then
+            read (ciu,m);
+            if m.cod_ciu = valor then
                 band := true
             else 
-                if ci.cod_ciu > valor then
+                if m.cod_ciu > valor then
                     sup:= med - 1
                 else
                     inf:= med + 1;
-
         end;
     BUSQUEDA_DICOT := band;
 end;
@@ -365,53 +364,53 @@ repeat
 until (opc = 'N');
 end;
 
+procedure ordenaci;
+var
+i,k: integer;
+j:unaciudad;
+begin
+reset(ciu);
+for i:= 0 to filesize(ciu)-2 do
+       for k := i+1 to filesize(ciu)-1 do
+          begin
+          Seek (ciu,i);
+          READ (ciu, ci);
+          Seek (ciu, k );
+          READ (ciu , j);
+          if ci.cod_ciu > j.cod_ciu
+              then
+                  begin
+                     Seek (ciu,i);
+                     Write (ciu, j);
+                     Seek (ciu ,k  );
+                     write (ciu,ci);
+                   end;
+         end;
+end;
+
 procedure alta_ciudades;
 var
 cod_ciudad: string[3];
 nom_ciu:string[25];
 respuesta:string[2];
 begin
+clrscr;
      writeln('Alta de ciudades');
      repeat
            {$I-}
-
               repeat
-                      
                     writeln('Ingrese codigo de la ciudad');
                     readln (ci.cod_ciu);
-              until ioresult<>0;
+              until (ioresult = 0) and (BUSQUEDA_DICOT(ci.cod_ciu) = false);
             {$I+}           
          writeln('Ingrese el nombre de la ciudad');
          readln(ci.nom);
          seek(ciu,filesize(ciu));
          write(ciu,ci);
          ordenaci;
-         writeln('Â¿Desea ingresar otra ciudad?');
+         writeln('¿Desea ingresar otra ciudad?');
          readln(respuesta);
          until(respuesta='NO');
-end;
-procedure odernaci;
-var
-j:unaciudad;
-begin
-reset (ci);
-for i:= 0 to filesize(ci)-2 do
-       for j := i+1 to filesize(ci)-1 do
-          begin
-          Seek (ciu ,ci  );
-          READ (ci , ci.cod_ciu);
-          Seek (ciu , j );
-          READ (ci , ci.cod_ciu);
-          if ci.cod_ciu > ci.cod_ciu
-              then
-                  begin
-                     Seek (ciu ,ci  );
-                     Write (ci, ci.cod_ciu);
-                     Seek (ciu ,j  );
-                     write (ci, ci.cod_ciu);
-                   end;
-         end;
-readln();
 end;
 
 procedure opciones_menup;
@@ -441,6 +440,34 @@ writeln();
 writeln('      5. Estadisticas');
 writeln();
 writeln('      0. Volver al menu principal');
+end;
+
+procedure estadisticas;
+var g,mayor: integer;
+ciud_mayor: string[3];
+begin
+clrscr;
+writeln('ESTADISTICAS');
+writeln();
+writeln();
+writeln('Empresas cuyas consultas fueron mayores a 10: ');
+reset(proy);
+for g:= 0 to (filesize(proyec) - 1) do
+    begin
+    read(proyec,proy);
+    if proy.cant[2] > 10 then
+       writeln('Empresa con codigo: ',proy.cod_emp);
+    end;
+writeln('La ciudad con más consultas de proyectos: ');
+mayor:= 0;
+for g:= 0 to (filesize(proyec) - 1) do
+    begin
+    read(proyec,proy);
+    if proy.cant[2] > mayor then
+       mayor:= proy.cant[2];
+       ciud_mayor:= proy.cod_ciu;
+    end;
+writeln(ciud_mayor);
 end;
 
 procedure menuempresas;
