@@ -384,10 +384,10 @@ begin
          writeln('Ingrese el nombre de la ciudad');
          readln(ci.nom);
          seek(ciu,filesize(ciu));
-         write(ciu,ci)
+         write(ciu,ci);
          ordenaci;
          writeln('¿Desea ingresar otra ciudad?');
-         readln(respuesta)
+         readln(respuesta);
          until(respuesta='NO');
 end;
 procedure odernaci;
