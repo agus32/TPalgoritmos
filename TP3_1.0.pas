@@ -388,7 +388,7 @@ begin
          writeln('¿Desea ingresar otra ciudad?');
          readln(respuesta)
          until(respuesta='NO');
-
+ordenaci;
 end;
 procedure odernaci;
 var
