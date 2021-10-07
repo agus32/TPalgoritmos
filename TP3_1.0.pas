@@ -145,8 +145,10 @@ end;
 FUNCTION BUSQUEDA_SEC(valor:string):boolean;
 var
     band : boolean;
-    
+    i: integer;
+
 begin
+    i:= 1;
     band := false;
     reset(emp);
     while not(EOF(emp)) do
@@ -154,6 +156,8 @@ begin
         read(emp,e);
         if e.cod_emp = valor then
         band := true;
+        seek(emp,i);
+        i := i+1;
     end;
 BUSQUEDA_SEC := band;
 end;
