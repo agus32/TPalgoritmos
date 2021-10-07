@@ -197,7 +197,7 @@ BEGIN
         write(emp,e);
         repeat
             writeln('Desea agregar otra empresa? Presione S para continuar, N para terminar');
-            readln(k)
+            readln(k);
         until (k='S')or(k='N');
     until (k='N');
     writeln('---------------------------');
