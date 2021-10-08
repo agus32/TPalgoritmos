@@ -408,7 +408,7 @@ clrscr;
          seek(ciu,filesize(ciu));
          write(ciu,ci);
          ordenaci;
-         writeln('Â¿Desea ingresar otra ciudad?');
+         writeln('¿Desea ingresar otra ciudad?');
          readln(respuesta);
          until(respuesta='NO');
 end;
@@ -442,10 +442,10 @@ writeln();
 writeln('      0. Volver al menu principal');
 end;
 
-procedure datosempresa(dato:string[3]);
+procedure datosempresa(valor:string[3]);
     
 begin
-writeln('Codigo    Nombre      DirecciÃ³n     Email      Telefono      CodCiudad');
+writeln('Codigo    Nombre      Dirección     Email      Telefono      CodCiudad');
     reset(emp);
     while not(EOF(emp)) do
     begin
@@ -466,14 +466,14 @@ writeln('ESTADISTICAS');
 writeln();
 writeln();
 writeln('Empresas cuyas consultas fueron mayores a 10: ');
-reset(proy);
+reset(proyec);
 for g:= 0 to (filesize(proyec) - 1) do
     begin
     read(proyec,proy);
     if proy.cant[2] > 10 then
        datosempresa(proy.cod_emp);
     end;
-writeln('La ciudad con mÃ¡s consultas de proyectos: ');
+writeln('La ciudad con más consultas de proyectos: ');
 mayor:= 0;
 for g:= 0 to (filesize(proyec) - 1) do
     begin
@@ -552,7 +552,7 @@ writeln('      0. Volver al menu principal');
 end;
 
 
-function precio(dato:string[3]);
+procedure precio(dato:string[3]);
 begin
     reset(produ);
     while not(EOF(produ)) do
@@ -560,29 +560,31 @@ begin
         read(produ,prod);
         if prod.cod_prod = dato then
         writeln('El precio del producto es de: ', prod.prec);
-
+    end;
 end;
-function cambioavendido(dato:string[3]);
+
+procedure cambioavendido(dato:string[3]);
 begin
    reset(produ);
     while not(EOF(produ)) do
     begin
         read(produ,prod);
         if prod.cod_prod = dato then
-           prod.estado=true;
-
-    reset(proy);
-    while not(EOF(proy)) do
+           prod.estado:=true;
+    end;
+    reset(proyec);
+    while not(EOF(proyec)) do
     begin
         read(proyec,proy);
-        begin
         if proy.cod_proy = dato then
+        begin
            proy.cant[3]:=proy.cant[3]+1;
            write(proyec,proy);
-
+        end;
+    end;
 end;
-procedure compraclientes;
 
+procedure compraclientes;
 var
 cod:string[3];
 respuesta:string[2];
@@ -591,12 +593,10 @@ clrscr;
 writeln('Ingrese el codigo del producto que desea comprar');
 readln(cod);
 precio(cod);
-writeln('Â¿Desea confirma la compra?');
+writeln('¿Desea confirma la compra?');
 readln(respuesta);
-         begin
               if respuesta ='si' then
               writeln('Compra realizada con exito');
-
 end;
 
 procedure menuclientes;
