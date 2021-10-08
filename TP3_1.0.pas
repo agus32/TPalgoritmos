@@ -142,20 +142,40 @@ begin
     BUSQUEDA_DICOT := band;
 end;
 
-FUNCTION BUSQUEDA_SEC(valor:string):boolean;
+FUNCTION BUSQUEDA_SEC(valor:string; op_arch:integer):boolean;
 var
     band : boolean;
     
 begin
+    if (op_arch=0) then
+    begin
     band := false;
     reset(emp);
     while not(EOF(emp)) do
     begin
         read(emp,e);
         if e.cod_emp = valor then
-        band := true;
+        band := true
     end;
-BUSQUEDA_SEC := band;
+    BUSQUEDA_SEC := band
+    end;
+
+    if (op_arch=1) then
+    begin
+    band := false;
+    reset(produ);
+    while not(EOF(produ)) do
+    begin
+        read(produ,prod);
+        if prod.cod_prod = valor then
+        begin
+        band := true;
+        writeln('El Codigo del producto ingresado ya existe, intente otro...');
+        writeln()
+        end
+    end;
+    BUSQUEDA_SEC := band
+    end;
 end;
 
 
@@ -167,6 +187,7 @@ VAR
     cod_emp,COD_ciudad: string[3];
 
 BEGIN
+clrscr;
     repeat
         writeln('Ingrese el codigo de la empresa');
         repeat
@@ -263,14 +284,11 @@ repeat
       write('Ingrese la cantidad de productos: ');
       readln(proy.cant[1]);
       writeln();
-      write('Ingrese la cantidad de consultas: ');
-      readln(proy.cant[2]);
-      writeln();
-      write('Ingrese la cantidad de vendidos: ');
-      readln(proy.cant[3]);
       writeln();
       writeln();
       proy.cont:= 0;
+      proy.cant[2]:=0;
+      proy.cant[3]:=0;
       proy.cant[4]:=0;
       seek(proyec,filesize(proyec));
       write(proyec,proy);
@@ -316,7 +334,6 @@ end;
 procedure alta_productos;
 var
 opc: char;
-estad: string[2];
 
 begin
 clrscr;
@@ -328,13 +345,12 @@ repeat
       repeat
             writeln('Ingrese el codigo del producto: ');
             readln(prod.cod_prod);
-      until (ioresult=0);
+      until (ioresult=0) and not(BUSQUEDA_SEC(prod.cod_prod,1));
       {$I+}
       repeat
             writeln('Ingrese codigo de proyecto correspondiente: ');
             readln(prod.cod_proy);
             if not (encontro_proyecto(prod.cod_proy)) then write('El codigo de proy. no existe, ingrese uno existente: ');
-            //tengo que hacer un contador de prod por proyecto asi no se pasa de eso.
       until cant_prod_proy(prod.cod_proy);
       {$I-}
       repeat
@@ -342,12 +358,8 @@ repeat
             readln(prod.prec);
       until (ioresult=0) and (prod.prec>=0);
       {$I+}
-      repeat
-            writeln('Ingrese el estado del producto - Vendido: SI/NO: ');
-            readln(estad);
-      until (estad='SI') or (estad='NO');
-      if (estad='SI') then prod.estado:=true;
-      if (estad='NO') then prod.estado:=false;
+      
+      prod.estado:=false;
       writeln('Ingrese los detalles del producto: ');
       readln(prod.detall);
 
@@ -408,7 +420,7 @@ clrscr;
          seek(ciu,filesize(ciu));
          write(ciu,ci);
          ordenaci;
-         writeln('¿Desea ingresar otra ciudad?');
+         writeln('Â¿Desea ingresar otra ciudad?');
          readln(respuesta);
          until(respuesta='NO');
 end;
@@ -445,7 +457,7 @@ end;
 procedure datosempresa(valor:string[3]);
     
 begin
-writeln('Codigo    Nombre      Dirección     Email      Telefono      CodCiudad');
+writeln('Codigo    Nombre      DirecciÃ³n     Email      Telefono      CodCiudad');
     reset(emp);
     while not(EOF(emp)) do
     begin
@@ -473,7 +485,7 @@ for g:= 0 to (filesize(proyec) - 1) do
     if proy.cant[2] > 10 then
        datosempresa(proy.cod_emp);
     end;
-writeln('La ciudad con más consultas de proyectos: ');
+writeln('La ciudad con mÃ¡s consultas de proyectos: ');
 mayor:= 0;
 for g:= 0 to (filesize(proyec) - 1) do
     begin
@@ -593,7 +605,7 @@ clrscr;
 writeln('Ingrese el codigo del producto que desea comprar');
 readln(cod);
 precio(cod);
-writeln('¿Desea confirma la compra?');
+writeln('Â¿Desea confirma la compra?');
 readln(respuesta);
               if respuesta ='si' then
               writeln('Compra realizada con exito');
