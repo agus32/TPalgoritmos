@@ -521,7 +521,7 @@ Repeat
           2: alta_empresas;
           3: alta_proyectos;
           4: alta_productos;
-          {5: estadisticas;}
+          5: estadisticas;
           end;
 until (opc=0);
 end;
