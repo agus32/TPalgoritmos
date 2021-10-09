@@ -563,6 +563,150 @@ writeln();
 writeln('      0. Volver al menu principal');
 end;
 
+/////////////////////////////////////////////////
+FUNCTION BUSQUEDA_NOM(valor:string):string;
+var
+    band : string[20];
+    i: integer;
+
+begin
+    i:= 1;
+    band := '';
+    reset(emp);
+    while not(EOF(emp)) do
+    begin
+        read(emp,e);
+        if e.cod_emp = valor then
+        band := e.nom;
+        seek(emp,i);
+        i := i+1;
+    end;
+BUSQUEDA_NOM := band;
+end;
+
+FUNCTION BUSQUEDA_CIU(valor:string):string;
+var
+    band : string[20];
+    i: integer;
+
+begin
+    i:= 1;
+    band := '';
+    reset(ciu);
+    while not(EOF(ciu)) do
+    begin
+        read(ciu,ci);
+        if ci.cod_ciu = valor then
+        band := ci.nom;
+        seek(ciu,i);
+        i := i+1;
+    end;
+BUSQUEDA_NOM := band;
+end;
+
+FUNCTION BUSQUEDA_PROD(valor:string):string;
+
+begin
+    reset(produ);
+    while not(EOF(produ)) do
+    begin
+        read(produ,prod);
+        if (prod.cod_proy = valor) and (prod.estado = false) then
+        begin
+        writeln('---------------------------------------');
+        writeln('Codigo de Producto: ',prod.cod_prod);
+        writeln('Cod. de Proyecto Perteneciente: ',prod.cod_proy);
+        writeln('Precio de Producto: $',prod.prec);
+        writeln('Detalles del Producto: ',prod.detall);
+        writeln('---------------------------------------')
+        end
+    end;
+end;
+
+PROCEDURE ACTUALIZAR_CANT_CONSULT(dato: string);
+var
+begin
+//busco en proy, con el proy.cod_proy
+//actualizo +1 en proy.cant[2]
+    reset(proyec);
+    repeat
+          read(proyec,proy);
+    until (proy.cod_proy = dato) or eof(proyec);
+    if (proy.cod_proy = dato) then
+    begin
+    proy.cant[2]:=proy.cant[2]+1;
+    seek(proyec, filepos(proyec)-1);
+    write(proyec,proy)
+    end;
+//tomo el proy.cod_emp y lo busco en emp
+//actualizo en emp, e.cont +1
+    seek(proyec, filepos(proyec)-1);
+    read(proyec,proy);
+    reset(emp);
+    repeat
+          read(emp,e);
+    until (proy.cod_emp = e.cod_emp) or eof(emp);
+    if (proy.cod_proy = e.cod_emp) then
+    begin
+    e.cont:=e.cont+1;
+    seek(emp, filepos(emp)-1);
+    write(emp,e)
+    end;
+//Tomo el proy.cod_ciu y lo busco en ciu
+//actualizo en ciu, ci.cont +1.
+    seek(proyec, filepos(proyec)-1);
+    read(proyec,proy);
+    reset(ciu);
+    repeat
+          read(ciu,ci);
+    until (proy.cod_ciu = ci.cod_ciu) or eof(ciu);
+    if (proy.cod_ciu = ci.cod_ciu) then
+    begin
+    ci.cont:=ci.cont+1;
+    seek(ciu, filepos(ciu)-1);
+    write(ciu,ci)
+    end;
+end;
+
+procedure consulta_proy;
+var
+    tipo: char;
+    etapa, nombre_emp, nombre_ciu, cod_proy_cons: string[20];
+    i: integer;
+
+begin
+    writeln('Ingrese tipo de proyecto a consultar [C/D/O/L]');
+    repeat
+        readln(tipo);
+    until (tipo='C')or(tipo='D')or(tipo='O')or(tipo='L');
+    i := 1;///
+    reset(proyec);
+    writeln('  CODIGO PROYECTO  |  NOMBRE EMPRESA  |  ETAPA  |  TIPO  |  CODIGO CIUDAD  |  CANTIDAD  |');
+    while not(EOF(proyec)) do
+    begin
+        read(proyec,proy);
+        if proy.tipo = tipo then
+        begin
+            case proy.etapa of 
+                'P': etapa := 'Preventa';
+                'O': etapa := 'Obra';
+                'T': etapa := 'Terminado';
+        end;
+        nombre_emp := BUSQUEDA_NOM(proy.cod_emp);
+        nombre_ciu := BUSQUEDA_CIU(proy.cod_ciu);
+    end;
+    repeat
+    writeln('Ingrese el codigo de proyecto existente a consultar: ');
+    readln(cod_proy_cons)
+    until (encontro_proyecto(cod_proy_cons))
+    writeln('Los productos disponibles del proyecto codigo', cod_proy_cons,' son: ');
+    writeln(BUSQUEDA_PROD(cod_proy_cons));
+    ACTUALIZAR_CANT_CONSULT(cod_proy_cons);
+    //
+    seek(proyec,i);
+    i := i+1;
+end;
+//////////////////////////////////////////////////
 
 procedure precio(dato:string[3]);
 begin
