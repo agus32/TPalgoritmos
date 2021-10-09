@@ -145,6 +145,9 @@ end;
 FUNCTION BUSQUEDA_SEC(valor:string; op_arch:integer):boolean;
 var
     band : boolean;
+    cl: unCliente;
+    e: unaEmpresa;
+    prod: unProducto;
     
 begin
     band := false;
@@ -192,6 +195,57 @@ begin
     end;
     BUSQUEDA_SEC := band;
 
+end;
+
+procedure ordenaci;
+var
+i,k: integer;
+j:unaciudad;
+begin
+reset(ciu);
+for i:= 0 to filesize(ciu)-2 do
+       for k := i+1 to filesize(ciu)-1 do
+          begin
+          Seek (ciu,i);
+          READ (ciu, ci);
+          Seek (ciu, k );
+          READ (ciu , j);
+          if ci.cod_ciu > j.cod_ciu
+              then
+                  begin
+                     Seek (ciu,i);
+                     Write (ciu, j);
+                     Seek (ciu ,k  );
+                     write (ciu,ci);
+                   end;
+         end;
+end;
+
+procedure alta_ciudades;
+var
+respuesta:string[2];
+begin
+clrscr;
+     writeln('Alta de ciudades');
+     repeat
+     writeln();
+     writeln();
+     write('Ingrese codigo de la ciudad: ');
+     repeat
+           readln (ci.cod_ciu);
+           if (BUSQUEDA_DICOT(ci.cod_ciu) = true) then write('La ciudad ya esta cargada, intente nuevamente: ');
+     until (BUSQUEDA_DICOT(ci.cod_ciu) = false);
+         writeln();
+         write('Ingrese el nombre de la ciudad: ');
+         readln(ci.nom);
+         seek(ciu,filesize(ciu));
+         write(ciu,ci);
+         ordenaci;
+         writeln();
+         write('Desea ingresar otra ciudad? [S/N]: ');
+         readln(respuesta);
+         respuesta:= upcase(respuesta);
+     until(respuesta='N');
 end;
 
 
@@ -272,9 +326,9 @@ repeat
       until not encontro_proyecto(proy.cod_proy);
       writeln();
       write('Ingrese el codigo de la empresa: ');
-      //repeat
+      repeat
       readln(proy.cod_emp);
-      //until busqueda_sec(proy.cod_emp);
+      until busqueda_sec(proy.cod_emp,0);
       writeln();
       write('Ingrese la etapa del proyecto (P - O - T: Preventa - Obra - Terminado): ');
       repeat
@@ -360,7 +414,7 @@ repeat
       repeat
             writeln('Ingrese el codigo del producto: ');
             readln(prod.cod_prod);
-      until (ioresult=0) and not(BUSQUEDA_SEC(prod.cod_prod,1));
+      until (ioresult=0) and not (BUSQUEDA_SEC(prod.cod_prod,1));
       {$I+}
       repeat
             writeln('Ingrese codigo de proyecto correspondiente: ');
@@ -391,63 +445,73 @@ repeat
 until (opc = 'N');
 end;
 
-procedure ordenaci;
-var
-i,k: integer;
-j:unaciudad;
+procedure datosempresa(valor:string[3]);
 begin
-reset(ciu);
-for i:= 0 to filesize(ciu)-2 do
-       for k := i+1 to filesize(ciu)-1 do
-          begin
-          Seek (ciu,i);
-          READ (ciu, ci);
-          Seek (ciu, k );
-          READ (ciu , j);
-          if ci.cod_ciu > j.cod_ciu
-              then
-                  begin
-                     Seek (ciu,i);
-                     Write (ciu, j);
-                     Seek (ciu ,k  );
-                     write (ciu,ci);
-                   end;
-         end;
+seek(emp,0);
+            repeat
+                  read(emp,e);
+            until (e.cod_emp = valor) or (eof(emp));
+            if (e.cod_emp = valor) then
+               writeln(e.cod_emp:3,'      ',e.nom:10,'     ',e.dire:14,'        ',e.mail:14,'          ',e.tel:8,'          ',e.cod_ciu:3);
 end;
 
-procedure alta_ciudades;
+FUNCTION BUSQUEDA_CIU(valor:string):string;
 var
-respuesta:string[2];
+    band : string[20];
+    ci: unaCiudad;
+begin
+    band := '';
+    reset(ciu);
+    while not(EOF(ciu)) do
+    begin
+        read(ciu,ci);
+        if ci.cod_ciu = valor then
+        band := ci.nom;
+    end;
+BUSQUEDA_CIU := band;
+end;
+
+procedure estadisticas;
+var g,mayor: integer;
+ciud_mayor: string[3];
 begin
 clrscr;
-     writeln('Alta de ciudades');
-     repeat
-           {$I-}
-              repeat
-                    writeln('Ingrese codigo de la ciudad');
-                    readln (ci.cod_ciu);
-              until (ioresult = 0) and (BUSQUEDA_DICOT(ci.cod_ciu) = false);
-            {$I+}           
-         writeln('Ingrese el nombre de la ciudad');
-         readln(ci.nom);
-         seek(ciu,filesize(ciu));
-         write(ciu,ci);
-         ordenaci;
-         writeln('¿Desea ingresar otra ciudad?');
-         readln(respuesta);
-         until(respuesta='NO');
-end;
-
-procedure opciones_menup;
-begin
-writeln('MENU PRINCIPAL');
+writeln('ESTADISTICAS');
 writeln();
-writeln('      1. EMPRESAS');
 writeln();
-writeln('      2. CLIENTES');
+writeln('Empresas cuyas consultas fueron mayores a 10: ');
 writeln();
-writeln('      0. Salir');
+writeln('Codigo          Nombre          Direcci�n                 Email          Telefono          CodCiudad');
+writeln('----------------------------------------------------------------------------------------------------');
+seek(proyec,0);
+for g:= 0 to (filesize(proyec) - 1) do
+    begin
+    read(proyec,proy);
+    if (proy.cant[2] > 10) then datosempresa(proy.cod_emp);
+    end;
 writeln();
+writeln();
+mayor:= 0;
+for g:= 0 to (filesize(proyec) - 1) do
+    begin
+    read(proyec,proy);
+    if proy.cant[2] > mayor then
+       mayor:= proy.cant[2];
+       ciud_mayor:= proy.cod_ciu;
+    end;
+writeln('La ciudad con mas consultas de proyectos fue: ',BUSQUEDA_CIU(ciud_mayor));
+writeln();
+writeln();
+writeln('Los proyectos que vendieron todas las unidades fueron: ');
+writeln();
+writeln('CODIGO DE PROYECTO');
+for g:= 0 to (filesize(proyec) - 1) do
+    begin
+    read(proyec,proy);
+    if proy.cant[3] = proy.cant[1] then
+       writeln(proy.cod_proy:18);
+    end;
+readkey;
 end;
 
 procedure opciones_menuempresas;
@@ -465,57 +529,6 @@ writeln();
 writeln('      5. Estadisticas');
 writeln();
 writeln('      0. Volver al menu principal');
-end;
-
-procedure datosempresa(valor:string[3]);
-    
-begin
-writeln('Codigo    Nombre      Dirección     Email      Telefono      CodCiudad');
-    reset(emp);
-    while not(EOF(emp)) do
-    begin
-        read(emp,e);
-        if e.cod_emp = valor then
-        writeln(e.cod_emp, e.nom, e.dire, e.mail, e.tel, e.cod_ciu);
-
-    end;
-
-end;
-
-procedure estadisticas;
-var g,mayor: integer;
-ciud_mayor: string[3];
-begin
-clrscr;
-writeln('ESTADISTICAS');
-writeln();
-writeln();
-writeln('Empresas cuyas consultas fueron mayores a 10: ');
-reset(proyec);
-for g:= 0 to (filesize(proyec) - 1) do
-    begin
-    read(proyec,proy);
-    if proy.cant[2] > 10 then
-       datosempresa(proy.cod_emp);
-    end;
-writeln('La ciudad con más consultas de proyectos: ');
-mayor:= 0;
-for g:= 0 to (filesize(proyec) - 1) do
-    begin
-    read(proyec,proy);
-    if proy.cant[2] > mayor then
-       mayor:= proy.cant[2];
-       ciud_mayor:= proy.cod_ciu;
-    end;
-writeln(ciud_mayor);
-writeln('Los proyectos que vendieron todas las unidades');
-for g:= 0 to (filesize(proyec) - 1) do
-    begin
-    read(proyec,proy);
-    if proy.cant[3] = proy.cant[1] then
-       writeln(proy.cod_proy);
-    end;
-readln();
 end;
 
 procedure menuempresas;
@@ -590,21 +603,6 @@ begin
         band := e.nom;
     end;
 BUSQUEDA_NOM := band;
-end;
-
-FUNCTION BUSQUEDA_CIU(valor:string):string;
-var
-    band : string[20];
-begin
-    band := '';
-    reset(ciu);
-    while not(EOF(ciu)) do
-    begin
-        read(ciu,ci);
-        if ci.cod_ciu = valor then
-        band := ci.nom;
-    end;
-BUSQUEDA_CIU := band;
 end;
 
 PROCEDURE BUSQUEDA_PROD(valor:string);
@@ -713,67 +711,89 @@ begin
     until (opc_cons='S') or (opc_cons='N');
     until (opc_cons='N');
 end;
+end;
 
-procedure precio(dato:string);
+procedure precio(dato:string[3]);
 begin
-    reset(produ);
-    while not(EOF(produ)) do
-    begin
+    seek(produ,0);
+    repeat
         read(produ,prod);
-        if prod.cod_prod = dato then
-        writeln('El precio del producto es de: ', prod.prec);
-    end;
+    until (prod.cod_prod = dato) or (eof(produ));
+    if (prod.cod_prod = dato) then
+        writeln('El precio del producto es de: $ ', prod.prec);
 end;
 
 procedure cambioavendido(dato:string[3]);
 begin
-   reset(produ);
-    while not(EOF(produ)) do
-    begin
+seek(produ,0);
+    repeat
         read(produ,prod);
-        if prod.cod_prod = dato then
-           prod.estado:=true;
-    end;
-    reset(proyec);
-    while not(EOF(proyec)) do
-    begin
+    until (prod.cod_prod = dato) or (eof(produ));
+if (prod.cod_prod = dato) then
+   prod.estado:= true;
+seek(produ,(filepos(produ) - 1));
+write(produ,prod);
+seek(proyec,0);
+repeat
         read(proyec,proy);
-        if proy.cod_proy = dato then
-        begin
-           proy.cant[3]:=proy.cant[3]+1;
-           write(proyec,proy);
-        end;
-    end;
+until (proy.cod_proy = dato) or eof(proyec);
+if (proy.cod_proy = dato) then
+   begin
+        proy.cant[3]:= (proy.cant[3] + 1);
+        seek(proyec,(filepos(proyec) - 1));
+        write(proyec,proy);
+   end;
 end;
 
-procedure compraclientes;
+procedure venta_prod(dni_comprador: string);
 var
 cod:string[3];
-respuesta:string[2];
+respuesta,respuesta2:string[2];
 begin
 clrscr;
-writeln('Ingrese el codigo del producto que desea comprar');
-readln(cod);
-precio(cod);
-writeln('¿Desea confirma la compra?');
-readln(respuesta);
-              if respuesta ='si' then
-              writeln('Compra realizada con exito');
-end;
-
-procedure alta_clientes;
-begin
+seek(cli,0);
+repeat
+      read(cli,cl);
+until (cl.dni = dni_comprador) or (eof(cli));
+if (cl.dni = dni_comprador) then writeln('Bienvenido ',cl.nya);
+repeat
+      writeln();
+      write('Ingrese el codigo del producto que desea comprar: ');
+      repeat
+            readln(cod);
+            if not (BUSQUEDA_SEC(cod,1)) then write('El codigo de producto ingresado no existe, vuelva a intentarlo: ');
+      until (BUSQUEDA_SEC(cod,1));
+      writeln();
+      precio(cod);
+      writeln();
+      writeln('Desea confirmar la compra? [S/N]: ');
+      repeat
+                     readln(respuesta);
+                     respuesta:= upcase(respuesta);
+      until (respuesta = 'S') or (respuesta = 'N');
+            if (respuesta = 'S') then
+            begin
+            cambioavendido(cod);
+            writeln('Compra realizada con exito, le llegara al mail: ',cl.mail);
+            end;
+      writeln();
+      writeln('Desea realizar otra compra: [S/N] ');
+      repeat
+            readln(respuesta2);
+      until (respuesta2 = 'S') or (respuesta2 = 'N');
+until (respuesta2 = 'N');
 end;
 
 procedure alta_clientes;
 var
-dni :string[8];
+dni,dni_reg :string;
 opc : integer;
+mail_reg: string;
 begin 
      clrscr;
      writeln('Ingrese DNI cliente');
      readln(dni);
-     if(BUSQUEDA_SEC(dni,2)) then
+     if (BUSQUEDA_SEC(dni,2)) then
      begin
      writeln('      1. Consulta de proyectos');
      writeln();
@@ -786,27 +806,34 @@ begin
      until (opc >= 0) and (opc <= 2);
      case opc of
      1: consulta_proy;
-     //2: venta_prod;
+     2: venta_prod(dni);
      end;
-end;
+end
 else
 begin
      writeln('Dni no encontrado por favor registrese');
      repeat until keypressed;
      clrscr;
+     writeln('        REGISTRO');
+     writeln('-----------------------');
+     writeln();
+     reset(cli);
      {$I-}
-     repeat 
+     repeat
      writeln('Ingrese dni valido');
-     readln(cl.dni);
-     if BUSQUEDA_SEC(cl.dni,2) then writeln('Dni ya registrado');
-     until ioresult = 0 and not(BUSQUEDA_SEC(cl.dni,2));
+     readln(dni_reg);
+     if BUSQUEDA_SEC(dni_reg,2) then writeln('Dni ya registrado');
+     until (ioresult = 0) and not (BUSQUEDA_SEC(dni_reg,2));
+     cl.dni:= dni_reg;
      {$I+}
      writeln('Ingrese nombre y apellido');
      readln(cl.nya);
      repeat
      writeln('Ingrese mail valido');
-     if BUSQUEDA_SEC(cl.mail,3) then writeln('Mail ya registrado');
-     until not(BUSQUEDA_SEC(cl.mail,3));
+     readln(mail_reg);
+     if BUSQUEDA_SEC(mail_reg,3) then writeln('Mail ya registrado');
+     until not(BUSQUEDA_SEC(mail_reg,3));
+     cl.mail:= mail_reg;
      seek(cli,filesize(cli));
      write(cli,cl);
 end;
@@ -856,6 +883,18 @@ if valida_clave(clave,clave_clientes) then menuclientes
    end;
 end;
 
+procedure opciones_menup;
+begin
+writeln('MENU PRINCIPAL');
+writeln();
+writeln('      1. EMPRESAS');
+writeln();
+writeln('      2. CLIENTES');
+writeln();
+writeln('      0. Salir');
+writeln();
+end;
+
 Begin
 asigna_y_abre;
 Repeat
@@ -876,4 +915,3 @@ close(cli);
 close(proyec);
 close(produ);
 end.
-
