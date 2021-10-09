@@ -147,9 +147,9 @@ var
     band : boolean;
     
 begin
+    band := false;
     if (op_arch=0) then
     begin
-    band := false;
     reset(emp);
     while not(EOF(emp)) do
     begin
@@ -157,12 +157,10 @@ begin
         if e.cod_emp = valor then
         band := true
     end;
-    BUSQUEDA_SEC := band
     end;
 
     if (op_arch=1) then
     begin
-    band := false;
     reset(produ);
     while not(EOF(produ)) do
     begin
@@ -174,10 +172,27 @@ begin
         writeln()
         end
     end;
-    BUSQUEDA_SEC := band
     end;
-end;
+    if (op_arch=2 or op_arch=3) then
+    begin
+    reset(cli);
+    while not(EOF(cli)) do
+    begin
+        read(cli,cl);
+        if op_arch = 2 then
+        begin
+        if cl.dni = valor then
+        band := true
+        end
+        else begin
+        if cl.mail = valor then
+        band := true
+        end;
+    end;
+    end;
+    BUSQUEDA_SEC := band;
 
+end;
 
 
 PROCEDURE alta_empresas;
@@ -751,6 +766,53 @@ end;
 
 procedure alta_clientes;
 begin
+end;
+
+procedure alta_clientes;
+var
+dni :string[8];
+opc : integer;
+begin 
+     clrscr;
+     writeln('Ingrese DNI cliente');
+     readln(dni);
+     if(BUSQUEDA_SEC(dni,2)) then
+     begin
+     writeln('      1. Consulta de proyectos');
+     writeln();
+     writeln('      2. Compra de productos');
+     writeln();
+     writeln('      0. Volver al menu principal');
+     repeat
+     writeln ('Ingrese una opcion: ');
+     readln(opc);
+     until (opc >= 0) and (opc <= 2);
+     case opc of
+     1: consulta_proy;
+     //2: venta_prod;
+     end;
+end;
+else
+begin
+     writeln('Dni no encontrado por favor registrese');
+     repeat until keypressed;
+     clrscr;
+     {$I-}
+     repeat 
+     writeln('Ingrese dni valido');
+     readln(cl.dni);
+     if BUSQUEDA_SEC(cl.dni,2) then writeln('Dni ya registrado');
+     until ioresult = 0 and not(BUSQUEDA_SEC(cl.dni,2));
+     {$I+}
+     writeln('Ingrese nombre y apellido');
+     readln(cl.nya);
+     repeat
+     writeln('Ingrese mail valido');
+     if BUSQUEDA_SEC(cl.mail,3) then writeln('Mail ya registrado');
+     until not(BUSQUEDA_SEC(cl.mail,3));
+     seek(cli,filesize(cli));
+     write(cli,cl);
+end;
 end;
 
 procedure menuclientes;
