@@ -567,10 +567,7 @@ end;
 FUNCTION BUSQUEDA_NOM(valor:string):string;
 var
     band : string[20];
-    i: integer;
-
 begin
-    i:= 1;
     band := '';
     reset(emp);
     while not(EOF(emp)) do
@@ -578,8 +575,6 @@ begin
         read(emp,e);
         if e.cod_emp = valor then
         band := e.nom;
-        seek(emp,i);
-        i := i+1;
     end;
 BUSQUEDA_NOM := band;
 end;
@@ -587,10 +582,7 @@ end;
 FUNCTION BUSQUEDA_CIU(valor:string):string;
 var
     band : string[20];
-    i: integer;
-
 begin
-    i:= 1;
     band := '';
     reset(ciu);
     while not(EOF(ciu)) do
@@ -598,14 +590,11 @@ begin
         read(ciu,ci);
         if ci.cod_ciu = valor then
         band := ci.nom;
-        seek(ciu,i);
-        i := i+1;
     end;
 BUSQUEDA_NOM := band;
 end;
 
-FUNCTION BUSQUEDA_PROD(valor:string):string;
-
+PROCEDURE BUSQUEDA_PROD(valor:string);
 begin
     reset(produ);
     while not(EOF(produ)) do
@@ -646,7 +635,7 @@ begin
     repeat
           read(emp,e);
     until (proy.cod_emp = e.cod_emp) or eof(emp);
-    if (proy.cod_proy = e.cod_emp) then
+    if (proy.cod_emp = e.cod_emp) then
     begin
     e.cont:=e.cont+1;
     seek(emp, filepos(emp)-1);
@@ -679,9 +668,8 @@ begin
     repeat
         readln(tipo);
     until (tipo='C')or(tipo='D')or(tipo='O')or(tipo='L');
-    i := 1;///
     reset(proyec);
-    writeln('  CODIGO PROYECTO  |  NOMBRE EMPRESA  |  ETAPA  |  TIPO  |  CODIGO CIUDAD  |  CANTIDAD  |');
+    writeln('  CODIGO PROYECTO  |  NOMBRE EMPRESA  |  ETAPA  |  TIPO  |  CIUDAD  |');
     while not(EOF(proyec)) do
     begin
         read(proyec,proy);
@@ -694,17 +682,23 @@ begin
         end;
         nombre_emp := BUSQUEDA_NOM(proy.cod_emp);
         nombre_ciu := BUSQUEDA_CIU(proy.cod_ciu);
+        writeln(proy.cod_proy,'  ', nombre_emp,'  ', etapa,'  ', tipo,'  ', nombre_ciu,'  ');   
     end;
+    writeln();
+    writeln();
+    repeat
     repeat
     writeln('Ingrese el codigo de proyecto existente a consultar: ');
     readln(cod_proy_cons)
-    until (encontro_proyecto(cod_proy_cons))
+    until (encontro_proyecto(cod_proy_cons));
     writeln('Los productos disponibles del proyecto codigo', cod_proy_cons,' son: ');
-    writeln(BUSQUEDA_PROD(cod_proy_cons));
+    BUSQUEDA_PROD(cod_proy_cons);
     ACTUALIZAR_CANT_CONSULT(cod_proy_cons);
-    //
-    seek(proyec,i);
-    i := i+1;
+    repeat
+    writeln('Desea consultar otro proyecto: S/N')
+    readln(opc_cons)
+    until (opc_cons='S') or (opc_cons='N');
+    until (opc_cons='N');
 end;
 //////////////////////////////////////////////////
 
@@ -755,6 +749,10 @@ readln(respuesta);
               writeln('Compra realizada con exito');
 end;
 
+procedure alta_clientes;
+begin
+end;
+
 procedure menuclientes;
 var opc: integer;
 begin
@@ -766,9 +764,9 @@ Repeat
           write ('Ingrese una opcion: ');
           readln(opc);
           until (opc >= 0) and (opc <= 1);
-     {case opc of
+     case opc of
           1: alta_clientes;
-          end;}
+          end;
 until (opc=0);
 end;
 
