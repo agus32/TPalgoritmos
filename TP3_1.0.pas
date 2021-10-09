@@ -578,7 +578,6 @@ writeln();
 writeln('      0. Volver al menu principal');
 end;
 
-/////////////////////////////////////////////////
 FUNCTION BUSQUEDA_NOM(valor:string):string;
 var
     band : string[20];
@@ -715,7 +714,6 @@ begin
     until (opc_cons='S') or (opc_cons='N');
     until (opc_cons='N');
 end;
-//////////////////////////////////////////////////
 
 procedure precio(dato:string[3]);
 begin
