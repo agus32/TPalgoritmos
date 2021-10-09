@@ -173,7 +173,7 @@ begin
         end
     end;
     end;
-    if (op_arch=2 or op_arch=3) then
+    if (op_arch=2) or (op_arch=3) then
     begin
     reset(cli);
     while not(EOF(cli)) do
@@ -206,8 +206,8 @@ clrscr;
     repeat
         writeln('Ingrese el codigo de la empresa');
         repeat
-            readln(cod_emp);
-        until not(BUSQUEDA_SEC(cod_emp));
+            readln(cod_emp)
+        until not(BUSQUEDA_SEC(cod_emp,0));
         writeln('Ingrese el nombre de la empresa');
         readln(nombre_emp);
         writeln('Ingrese la direccion');
@@ -417,8 +417,6 @@ end;
 
 procedure alta_ciudades;
 var
-cod_ciudad: string[3];
-nom_ciu:string[25];
 respuesta:string[2];
 begin
 clrscr;
@@ -578,6 +576,7 @@ writeln();
 writeln('      0. Volver al menu principal');
 end;
 
+/////////////////////////////////////////////////
 FUNCTION BUSQUEDA_NOM(valor:string):string;
 var
     band : string[20];
@@ -605,7 +604,7 @@ begin
         if ci.cod_ciu = valor then
         band := ci.nom;
     end;
-BUSQUEDA_NOM := band;
+BUSQUEDA_CIU := band;
 end;
 
 PROCEDURE BUSQUEDA_PROD(valor:string);
@@ -627,7 +626,7 @@ begin
 end;
 
 PROCEDURE ACTUALIZAR_CANT_CONSULT(dato: string);
-var
+
 begin
 //busco en proy, con el proy.cod_proy
 //actualizo +1 en proy.cant[2]
@@ -673,7 +672,7 @@ end;
 
 procedure consulta_proy;
 var
-    tipo: char;
+    tipo, opc_cons: char;
     etapa, nombre_emp, nombre_ciu, cod_proy_cons: string[20];
     i: integer;
 
@@ -709,13 +708,13 @@ begin
     BUSQUEDA_PROD(cod_proy_cons);
     ACTUALIZAR_CANT_CONSULT(cod_proy_cons);
     repeat
-    writeln('Desea consultar otro proyecto: S/N')
+    writeln('Desea consultar otro proyecto: S/N');
     readln(opc_cons)
     until (opc_cons='S') or (opc_cons='N');
     until (opc_cons='N');
 end;
 
-procedure precio(dato:string[3]);
+procedure precio(dato:string);
 begin
     reset(produ);
     while not(EOF(produ)) do
