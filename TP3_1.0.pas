@@ -494,12 +494,12 @@ for g:= 0 to (filesize(proyec) - 1) do
 writeln();
 writeln();
 mayor:= 0;
-for g:= 0 to (filesize(proyec) - 1) do
+for g:= 0 to (filesize(ciu) - 1) do
     begin
-    read(proyec,proy);
-    if proy.cant[2] > mayor then
-       mayor:= proy.cant[2];
-       ciud_mayor:= proy.cod_ciu;
+    read(ciu,ci);
+    if (ci.cont > mayor) then
+       mayor:= ci.cont;
+       ciud_mayor:= ci.cod_ciu;
     end;
 writeln('La ciudad con mas consultas de proyectos fue: ',BUSQUEDA_CIU(ciud_mayor));
 writeln();
