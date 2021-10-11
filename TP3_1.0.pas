@@ -328,6 +328,7 @@ repeat
       write('Ingrese el codigo de la empresa: ');
       repeat
       readln(proy.cod_emp);
+      if not busqueda_sec(proy.cod_emp,0) then write('El codigo de la empresa no existe, vuelva a intentarlo: ');
       until busqueda_sec(proy.cod_emp,0);
       writeln();
       write('Ingrese la etapa del proyecto (P - O - T: Preventa - Obra - Terminado): ');
@@ -346,9 +347,10 @@ repeat
       until (proy.tipo = 'C') or (proy.tipo = 'D') or (proy.tipo = 'O') or (proy.tipo = 'L');
       writeln();
       write('Ingrese el codigo de ciudad: ');
-      //repeat
+      repeat
       readln(proy.cod_ciu);
-      //until funcion();
+      if not busqueda_dicot(proy.cod_ciu) then write('El codigo de ciudad no existe, vuelva a intentarlo: ');
+      until busqueda_dicot(proy.cod_ciu);
       writeln();
       write('Ingrese la cantidad de productos: ');
       readln(proy.cant[1]);
